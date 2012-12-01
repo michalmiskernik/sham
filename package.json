@@ -1,0 +1,15 @@
+{
+  "name": "sham",
+  "version": "0.1.0",
+  "description": "A simple mocking library.",
+  "main": "index.js",
+  "scripts": {
+    "test": "./node_modules/.bin/mocha"
+  },
+  "repository": "",
+  "author": "Michal Miskernik <michal@miskernik.sk>",
+  "license": "BSD",
+  "devDependencies": {
+    "mocha": "~1.7.0"
+  }
+}
