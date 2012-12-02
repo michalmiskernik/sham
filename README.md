@@ -43,6 +43,8 @@ You can generate mocks too:
 		var file = sham.mock();
 		file.method('read');
 		file.method('write');
+
+		return file;
 	}
 
 	var file = create();
