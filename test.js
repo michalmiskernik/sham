@@ -65,4 +65,13 @@ describe('mock', function() {
 			mock.check();
 		}, /bar was called/);
 	});
+
+	it('should have spies as methods', function() {
+		var mock = sham.mock();
+
+		mock.method('foo');
+
+		assert.equal(typeof mock.foo.args, 'function');
+		assert.equal(typeof mock.foo.return, 'function');
+	})
 });
