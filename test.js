@@ -2,76 +2,151 @@ assert = require('assert');
 sham = require('./index');
 
 describe('spy', function() {
-	it('should test arguments', function() {
-		var sum = sham.spy('sum');
+	describe('#args', function() {
+		it('should not throw when not called', function() {
+			var spy = sham.spy();
 
-		sum.args(1, 2, 3);
+			assert.doesNotThrow(function() {
+				spy();
+				spy('foo', 'bar');
+			});
+		});
 
-		assert.throws(function() {
-			sum(3, 2);
-		}, /is not equal to/);
+		it('should check arguments', function() {
+			var spy = sham.spy().args('foo', 1);
 
-		assert.doesNotThrow(function() {
-			sum(1, 2, 3);
+			assert.doesNotThrow(function() {
+				spy('foo', 1);
+				spy('foo', 1, 'bar');
+			});
+
+			assert.throws(function() {
+				spy();
+			}, '1. argument in spy is not foo, but undefined');
+
+			assert.throws(function() {
+				spy('foo');
+			}, '2. argument in spy is not 1, but undefined');
+
+			assert.throws(function() {
+				spy('foo', 2);
+			}, '2. argument in spy is not 1, but 2');
+		});
+
+		it('should check arguments when called multiple times', function() {
+			var spy;
+
+			// correct arguments
+
+			spy = sham.spy()
+				.args(10, 20)
+				.args(30, 40);
+
+			assert.doesNotThrow(function() {
+				spy(10, 20);
+				spy(30, 40);
+				spy(30, 40);
+			});
+
+			// incorrect arguments
+
+			spy = sham.spy()
+				.args(50, 60)
+				.args(70, 80);
+
+			spy(50, 60);
+
+			assert.throws(function() {
+				spy(77, 88);
+			}, /argument in spy is not/);
+
+			spy(70, 80);
+
+			assert.throws(function() {
+				spy(77, 88);
+			}, /argument in spy is not/);
 		});
 	});
 
-	it('should return correct value', function() {
-		var sum = sham.spy('sum');
+	describe('#return', function() {
+		it('should return undefined when was not called', function() {
+			var spy = sham.spy();
+			assert.equal(spy(), undefined);
+		});
 
-		sum.return(8);
+		it('should return it\'s argument', function() {
+			var spy = sham.spy().return('foo');
+			assert.equal(spy(), 'foo');
+		});
 
-		assert.equal(sum(), 8);
+		it('should work if called multiple times', function() {
+			var spy = sham.spy()
+				.return('foo')
+				.return('bar');
+
+			assert.equal(spy(), 'foo');
+			assert.equal(spy(), 'bar');
+			assert.equal(spy(), 'bar');
+		});
 	});
 
-	it('should test if function was called', function() {
-		var save = sham.spy('save');
+	describe('#called', function() {
+		it('should work', function() {
+			var spy = sham.spy();
 
-		save.called();
+			spy();
+			spy();
 
-		assert.throws(function() {
-			save.check();
-		}, /was called 0 times instead of 1/);
+			spy.called(5);
+			assert.throws(function() {
+				spy.check();
+			}, /2x instead of 5x/);
 
-		save();
+			spy.called(2);
+			assert.doesNotThrow(function() {
+				spy.check();
+			});
 
-		assert.doesNotThrow(function() {
-			save.check();
+			spy.called();
+			assert.throws(function() {
+				spy.check();
+			}, /2x instead of 1x/);
 		});
+	});
+
+	it('should work all together', function() {
+		var sum = sham.spy()
+			.args(1, 2).return(3)
+			.args(3, 3).return(6)
+			.args(6, 4).return(10)
+			.called(3);
+
+		assert.equal(sum(1, 2), 3);
+		assert.equal(sum(3, 3), 6);
+		assert.equal(sum(6, 4), 10);
+
+		sum.check();
+
+		var move = sham.spy()
+			.return('done!')
+			.args(10, 20)
+			.args(20, 30)
+			.called(2);
+
+		assert.equal(move(10, 20), 'done!')
+		assert.equal(move(20, 30), 'done!');
+
+		move.check();
 	});
 });
 
 describe('mock', function() {
-	it('should create methods', function() {
-		var mock = sham.mock();
-
-		mock.method('foo').return('bar');
-		mock.method('baz').return(123);
-
-		assert.equal(mock.foo(), 'bar');
-		assert.equal(mock.baz(), 123);
-	});
-
-	it('should check all methods', function() {
-		var mock = sham.mock();
-
-		mock.method('foo').called();
-		mock.method('bar').called(2);
-
-		mock.foo();
-		mock.bar();
-
-		assert.throws(function() {
-			mock.check();
-		}, /bar was called/);
-	});
-
-	it('should have spies as methods', function() {
+	it('should create spies as methods', function() {
 		var mock = sham.mock();
 
 		mock.method('foo');
 
-		assert.equal(typeof mock.foo.args, 'function');
-		assert.equal(typeof mock.foo.return, 'function');
-	})
+		assert(typeof mock.foo.args == 'function');
+		assert(typeof mock.foo.return == 'function');
+	});
 });

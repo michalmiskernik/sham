@@ -1,28 +1,9 @@
-exports.mock = function() {
-	return new Mock();
-};
-
 exports.spy = function(name) {
 	return spy(name);
 };
 
-// --- mock ---
-
-function Mock() {
-	this._methods = [];
-}
-
-Mock.prototype.method = function(name) {
-	var method = spy(name);
-	this[name] = method;
-	this._methods.push(method);
-	return method;
-};
-
-Mock.prototype.check = function() {
-	for (var i = 0; i < this._methods.length; i++) {
-		this._methods[i].check();
-	}
+exports.mock = function() {
+	return new Mock();
 };
 
 // --- spy ---
@@ -32,9 +13,9 @@ function spy(name) {
 		return fn.invoke(arguments);
 	}
 
-	fn._name = name || '[?]';
+	fn._name = name || 'spy';
 	fn._args = [];
-	fn._return = undefined;
+	fn._return = [];
 	fn._expected = null;
 	fn._called = 0;
 
@@ -48,47 +29,64 @@ function spy(name) {
 }
 
 spy.args = function() {
-	this._args = arguments;
+	var args = Array.prototype.slice.call(arguments);
+	this._args.push(args);
 	return this;
 };
 
 spy.return = function(value) {
-	this._return = value;
+	this._return.push(value);
 	return this;
 };
 
 spy.called = function(expected) {
-	if (expected == null) {
-		this._expected = 1;
-	} else {
-		this._expected = expected;
-	}
-
+	this._expected = (expected != null) ? expected : 1;
 	return this;
-}
+};
 
 spy.invoke = function(args) {
-	for (var i = 0; i < this._args.length; i++) {
+	var c = this._called++,
+			a = this._args,
+			expected = a[c] || a[a.length - 1] || [];
+
+	for (var i = 0; i < expected.length; i++) {
 		assert(
-			args[i] === this._args[i],
-			this._name + ': ' + i + '. argument ' + args[i] + ' is not equal to ' + this._args[i]
+			expected[i] === args[i],
+			(i + 1) + '. argument in ' + this._name + ' is not ' + expected[i] + ', but ' + args[i]
 		);
 	}
 
-	this._called++;
-
-	return this._return;
+	var r = this._return;
+	return r[c] || r[r.length - 1];
 };
 
 spy.check = function() {
 	if (this._expected != null) {
 		assert(
-			this._expected === this._called,
-			'spy ' + this._name + ' was called ' + this._called +
-			' times instead of ' + this._expected
+			this._called === this._expected,
+			this._name + ' was called ' + this._called + 'x instead of ' + this._expected + 'x'
 		);
 	}
+};
+
+// --- mock ---
+
+function Mock() {
+	this._methods = [];
 }
+
+Mock.prototype.method	= function(name) {
+	var method = spy(name);
+	this._methods.push(method);
+	this[name] = method;
+	return method;
+};
+
+Mock.prototype.check = function() {
+	this._methods.forEach(function(method) {
+		method.check();
+	});
+};
 
 // --- assert ---
 
