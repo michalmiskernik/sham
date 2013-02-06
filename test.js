@@ -144,9 +144,29 @@ describe('mock', function() {
 	it('should create spies as methods', function() {
 		var mock = sham.mock();
 
-		mock.method('foo');
+		mock.spy('foo');
 
 		assert(typeof mock.foo.args == 'function');
 		assert(typeof mock.foo.return == 'function');
+	});
+
+	it('should create mocks as properties', function() {
+		var mock = sham.mock();
+
+		mock.mock('foo');
+
+		assert(typeof mock.foo.spy == 'function');
+	});
+
+	it('should mock class', function() {
+		function Foo() {}
+		Foo.prototype.bar = function() { return 'bar'; };
+		Foo.prototype.baz = function() { return 'baz'; };
+
+		var mock = sham.mock(Foo);
+		mock.spy('bar').return('mocked!');
+
+		assert(mock.bar() == 'mocked!');
+		assert(mock.baz() == 'baz');
 	});
 });
