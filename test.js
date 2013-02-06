@@ -169,4 +169,14 @@ describe('mock', function() {
 		assert(mock.bar() == 'mocked!');
 		assert(mock.baz() == 'baz');
 	});
+
+	it('should check all spies and mocks', function() {
+		var m1 = sham.mock();
+		m1.mock('foo').spy('bar').called();
+		assert.throws(m1.check);
+
+		var m2 = sham.mock();
+		m2.spy('foo').called();
+		assert.throws(m2.check);
+	});
 });
