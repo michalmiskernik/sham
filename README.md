@@ -20,14 +20,14 @@ var result = sum(5, 7); // result is now 12
 sum.check(); // this throws an error, because sum was called only once
 ```
 
-sham.mock()
+sham.mock([obj])
 -------------
 
 ```javascript
 var file = sham.mock();
 
-file.method('read').return('some text').called();
-file.method('write').args('another text').called();
+file.spy('read').return('some text').called();
+file.spy('write').args('another text').called();
 
 var contents = file.read(); // contents is now 'some text'
 
@@ -38,20 +38,13 @@ file.write('another text');
 file.check(); // this doesn't throw
 ```
 
-You can generate mocks too:
+You can mock classes too:
 
 ```javascript
-function create() {
-	var file = sham.mock();
-	file.method('read');
-	file.method('write');
+function Foo() {}
 
-	return file;
-}
+var mock = sham.mock(Foo);
+mock.spy('bar').return('baz');
 
-var file = create();
-
-file.read.return('some text');
-
-var contents = file.read(); // contents is now 'some text'
+console.log(mock.bar()) // outputs 'baz'
 ```
