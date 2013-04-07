@@ -1,0 +1,8 @@
+{
+  "name": "sham",
+  "repo": "michalmiskernik/sham",
+  "version": "0.3.0",
+  "scripts": [
+    "index.js"
+  ]
+}
