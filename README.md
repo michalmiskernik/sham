@@ -1,10 +1,30 @@
-Sham
-====
+# Sham
 
 Sham is a simple and small JavaScript library for mocking.
 
-sham.spy([name])
-------------------
+## Installation
+
+You can use it as a node.js package:
+
+```
+npm install sham
+```
+
+As a [component](http://github.com/component/component) package:
+
+```
+component install michalmiskernik/sham
+```
+
+Or just include it in a webpage:
+
+```
+<script src="sham.js"></script>
+```
+
+## API
+
+### sham.spy([name])
 
 ```javascript
 var sum = sham.spy('sum');
@@ -20,8 +40,7 @@ var result = sum(5, 7); // result is now 12
 sum.check(); // this throws an error, because sum was called only once
 ```
 
-sham.mock([obj])
--------------
+### sham.mock([obj])
 
 ```javascript
 var file = sham.mock();
