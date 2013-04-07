@@ -1,5 +1,5 @@
-assert = require('assert');
-sham = require('./index');
+var assert = require('assert'),
+		sham = require('./sham.js');
 
 describe('spy', function() {
 	describe('#args', function() {

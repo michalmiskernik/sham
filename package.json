@@ -4,7 +4,7 @@
   "description": "A simple mocking library.",
   "author": "Michal Miskernik <michal@miskernik.sk>",
 
-  "main": "index.js",
+  "main": "sham.js",
   "scripts": {
     "test": "./node_modules/.bin/mocha"
   },

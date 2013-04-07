@@ -2,7 +2,8 @@
   "name": "sham",
   "repo": "michalmiskernik/sham",
   "version": "0.3.0",
+  "main": "sham.js",
   "scripts": [
-    "index.js"
+    "sham.js"
   ]
 }
