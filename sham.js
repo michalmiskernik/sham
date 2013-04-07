@@ -1,3 +1,7 @@
+if (typeof exports == 'undefined') {
+	var exports = window.sham = {};
+}
+
 exports.spy = function(name) {
 	return createSpy(name);
 };
