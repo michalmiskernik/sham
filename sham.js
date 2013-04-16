@@ -83,8 +83,8 @@ function createMock(obj) {
 		return spy;
 	};
 
-	obj.mock = function(name) {
-		var mock = createMock();
+	obj.mock = function(name, obj) {
+		var mock = createMock(obj);
 		obj[name] = mock;
 		checks.push(mock);
 		return mock;
